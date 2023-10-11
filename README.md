@@ -150,12 +150,12 @@ O Alura Space é um projeto desenvolvido com Django, que simula um CRUD para o e
   ```python
   def imagem(request, foto_id):
     fotografia = get_object_or_404(Fotografia, pk=foto_id)
-    return render(request, 'galeria/imagem.html', {"fotografia": fotografia}) 
+    return render(request, 'galeria/imagem.html', {"fotografia": fotografia})
   ```
 
 ![imagem](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/imagem.png)
 
-- Ao clicar para editar a imagem, o formulário de imagem é aberto com os dados carregados da imagem.
+- Ao clicar para editar a imagem, é carregado o path `/editar-imagem/<int:foto_id>`, onde o formulário de imagem é aberto com os dados carregados da imagem.
 
 ```python
   def editar_imagem(request, foto_id):
@@ -174,6 +174,28 @@ O Alura Space é um projeto desenvolvido com Django, que simula um CRUD para o e
                 request, "Ocorreu um erro ao editar a fotografia.")
 
     return render(request, 'galeria/editar_imagem.html', {'form': form, 'foto_id': foto_id})
-  ```
+```
 
 ![editar](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/editar.png)
+
+####
+
+- `/admin`: Essa rota é o painel de administrador do Django.
+
+![editar](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/admin.png)
+
+- Através dela, é possível fazer o gerenciamento dos usuários, grupos e também das fotografias, onde podemos cadastrar, alterar e editar todas as fotos além de conseguir-mos buscar-lás e filtrar-lás.
+
+```python
+  class ListarFotografias(admin.ModelAdmin):
+    list_display = ("id", "ativo", "nome", "legenda")
+    list_display_links = ("id", "nome")
+    search_fields = ["nome"]
+    list_filter = ("categoria",)
+    list_editable = ("ativo",)
+    list_per_page = 10
+
+admin.site.register(Fotografia, ListarFotografias)
+```
+
+![editar](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/admin2.png)
