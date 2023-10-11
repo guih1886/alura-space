@@ -11,10 +11,17 @@ O Alura Space é um projeto desenvolvido com Django, que simula um CRUD para o e
 
 > - **Fazer login.**
 > - **Cadastrar um novo usuário.**
-> - **Cadastrar novas imagems para a página inicial.**
+> - **Cadastrar novas imagens para a página inicial.**
+> - **Detalhar a imagem, com a opção de alterar ou excluir.**
+> - **Administração através do Django Admin**
 > - **Filtrar por categoria.**
 > - **Pesquisar por nome.**
-> - **Administração através do Django Admin**
+
+- `/`: A página inicial do projeto, aonde são listadas as imagens principais da aplicação.
+
+![index](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/index.png#vitrinedev)
+
+###
 
 - `/login`: Essa rota é responsável por fazer o login na aplicação e redirecionar para a página inicial ou para a página de login, caso o acesso falhe.
 
@@ -82,11 +89,91 @@ O Alura Space é um projeto desenvolvido com Django, que simula um CRUD para o e
     return render(request, 'usuarios/cadastro.html', {'form': form})
   ```
 
+![cadastrar-usuario](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/cadastrar-usuario.png)
+
+####
+
+- `/nova-imagem`: Essa rota tem a finalidade de cadastrar uma nova imagem para a galeria, sendo necessário preencher os campos de `nome`,`legenda`,`categoria`, `descrição`, `enviar a foto`,`data` e selecionar o `usuario`.
+
+  ```python
+  class FotografiaForms(forms.ModelForm):
+    class Meta:
+        model = Fotografia
+        exclude = ['ativo']
+        labels = {
+            'descricao': 'Descrição',
+            'data_fotografia': 'Data de Registro',
+            'usuario': 'Usuário',
+        }
+
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control'}),
+            'legenda': forms.TextInput(attrs={'class': 'form-control'}),
+            'categoria': forms.Select(attrs={'class': 'form-control'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control'}),
+            'foto': forms.FileInput(attrs={'class': 'form-control'}),
+            'data_fotografia': forms.DateInput(
+                format='%d/%m/%Y',
+                attrs={
+                    'type': 'date',
+                    'class': 'form-control'
+                }
+            ),
+            'usuario': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+  def nova_imagem(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Usuário não logado.")
+        return redirect('login')
+
+    form = FotografiaForms
+    if request.method == "POST":
+        form = FotografiaForms(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Nova fotografia cadastrada.")
+            return redirect('index')
+        else:
+            messages.error(
+                request, "Ocorreu um erro ao cadastrar a fotografia.")
+
+    return render(request, 'galeria/nova_imagem.html', {"form": form})
+  ```
+
 ![cadastrar](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/cadastrar.png)
 
-<!-- Inserir imagem com a #vitrinedev ao final do link -->
+####
 
-### Imagens
+- `/imagem/<int:foto_id>`: Essa rota tem a finalidade de detalhar a imagem selecionada, mostrando sua foto, nome, legenda e descrição. Tem os dois botões para editar e excluir a publicação.
 
-![index](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/index.png#vitrinedev)
-![cadastrar-usuario](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/cadastrar-usuario.png)
+  ```python
+  def imagem(request, foto_id):
+    fotografia = get_object_or_404(Fotografia, pk=foto_id)
+    return render(request, 'galeria/imagem.html', {"fotografia": fotografia}) 
+  ```
+
+![imagem](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/imagem.png)
+
+- Ao clicar para editar a imagem, o formulário de imagem é aberto com os dados carregados da imagem.
+
+```python
+  def editar_imagem(request, foto_id):
+    fotografia = Fotografia.objects.get(id=foto_id)
+    form = FotografiaForms(instance=fotografia)
+
+    if request.method == "POST":
+        form = FotografiaForms(
+            request.POST, request.FILES, instance=fotografia)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Fotografia editada com sucesso.")
+            return redirect('index')
+        else:
+            messages.error(
+                request, "Ocorreu um erro ao editar a fotografia.")
+
+    return render(request, 'galeria/editar_imagem.html', {'form': form, 'foto_id': foto_id})
+  ```
+
+![editar](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/editar.png)
