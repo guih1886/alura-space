@@ -18,8 +18,6 @@ O Alura Space é um projeto desenvolvido com Django, que simula um CRUD para o e
 
 - `/login`: Essa rota é responsável por fazer o login na aplicação e redirecionar para a página inicial ou para a página de login, caso o acesso falhe.
 
-  [login]
-
   ```python
   def login(request):
     form = LoginForms()
@@ -47,6 +45,8 @@ O Alura Space é um projeto desenvolvido com Django, que simula um CRUD para o e
 
     return render(request, 'usuarios/login.html', {"form": form})
   ```
+
+  ![login](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/login.png)
 
 ####
 
@@ -247,6 +247,5 @@ O Alura Space é um projeto desenvolvido com Django, que simula um CRUD para o e
 ### Imagens
 
 ![index](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/index.png#vitrinedev)
-![login](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/login.png)
 ![cadastrar](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/cadastrar.png)
 ![cadastrar-usuario](https://github.com/guih1886/alura-space/blob/main/static/assets/imagens/prints/cadastrar-usuario.png)
